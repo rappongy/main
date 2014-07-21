@@ -1,0 +1,79 @@
+Library WS_DataConstructor
+
+%REM
+	Каркас для создания веб-сервисов, которые собирают различные данные
+	emz /21.07.2014
+%END REM
+Class Export
+	Private log As SimpledLog
+	
+	Sub New()
+		Set Me.log = New SimpledLog()
+		Call Me.log.PrintMsg("WS START")
+	End Sub
+	
+	Sub Delete()
+		Dim log_ As New SimpledLog()
+		Call log_.PrintMsg("WS FINISH")
+	End Sub
+End Class
+
+Class Data
+	Public data() As Details
+	
+	Sub new
+		Redim data(0) As Details
+	End Sub
+	
+	Public Sub Init()
+		'тут мы в цикле бегаем по студентам
+		'и создаем 
+		Dim detail As New OneDetailCreator()
+		If detail.isValid() Then
+			Call Me.appendToData(detail.getOneDetail())
+		End If
+	End Sub
+	
+	Private Sub appendToData(oneDetail As Details)
+		Dim new_size%
+		If Me.data(0) Is Nothing Then
+			new_size = 0
+		Else
+			new_size = Me.getSize() + 1
+		End If
+		Redim Preserve Me.data(new_size) As Details
+		Set Me.data(new_size) = oneDetail
+	End Sub
+	
+	Private Function getSize() As Integer
+		getSize = Ubound(data)
+	End Function
+End Class
+
+Class OneDetailCreator
+	Public Function isValid() As Boolean
+		'проверки
+		isValid = True
+	End Function
+	
+	Public Function getOneDetail() As Details
+		Dim detail As New Details()
+		'наполняем поля класса Details
+		Set getOneDetail = detail
+	End Function
+End Class
+
+Class Details
+	'здесь публичные поля
+	Private number_of_row As Integer
+End Class
+
+'обертка для упрощения логирования
+Class SimpledLog As LocmanLog
+	Sub PrintMsg(message$)
+		Call Me.Print("", 0, message)
+	End Sub
+	Sub PrintErr()
+		Call Me.Print("", 2, Error + " | " + Getthreadinfo(10) + " (" + Cstr(Erl) + ")")
+	End Sub
+End Class
